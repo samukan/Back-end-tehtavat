@@ -2,8 +2,17 @@ import http from 'http';
 import url from 'url';
 
 let dataStore = {
-  data: { id: 1, message: 'Hello, World!' },
+  data: { id: 1, message: 'Hello, World!', timestamp: new Date().toISOString() },
 };
+
+// List of random facts
+const facts = [
+  'The earth is round!',
+  'Honey never spoils.',
+  'A single cloud can weigh over a million pounds.',
+  'Bananas are berries, but strawberries aren’t.',
+  'Wombat poop is cube-shaped!'
+];
 
 const sendResponse = (res, statusCode, data) => {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
@@ -14,14 +23,26 @@ const sendResponse = (res, statusCode, data) => {
   }
 };
 
+// To generate a new ID for messages
+let messageId = 2;
+
+const generateNewId = () => {
+  return messageId++;
+};
+
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const method = req.method;
   const path = parsedUrl.pathname;
 
   // GET request
-  if (method === 'GET' && path === '/data') {
-    return sendResponse(res, 200, dataStore);
+  if (method === 'GET') {
+    if (path === '/data') {
+      return sendResponse(res, 200, dataStore);
+    } else if (path === '/random-fact') {
+      const randomFact = facts[Math.floor(Math.random() * facts.length)];
+      return sendResponse(res, 200, { fact: randomFact });
+    }
   }
 
   // POST request
@@ -35,8 +56,10 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const newData = JSON.parse(body);
+        newData.id = generateNewId();  // Generate a new incremental ID
+        newData.timestamp = new Date().toISOString();  // Add a timestamp
         dataStore.data = newData;
-        return sendResponse(res, 201, { message: 'Data saved successfully!', data: newData });
+        return sendResponse(res, 201, { message: 'Data saved successfully!', data: newData }); 
       } catch {
         return sendResponse(res, 400, { message: 'Invalid JSON format' });
       }
@@ -49,9 +72,9 @@ const server = http.createServer((req, res) => {
   if (method === 'DELETE' && path === '/data') {
     if (dataStore.data) {
       dataStore.data = null;
-      return sendResponse(res, 204); 
+      return sendResponse(res, 200, { message: 'Data deleted successfully.' });
     } else {
-      return sendResponse(res, 404, { message: 'Data not found.' }); 
+      return sendResponse(res, 404, { message: 'Data not found.' });
     }
   }
 
@@ -67,10 +90,12 @@ const server = http.createServer((req, res) => {
       try {
         const updatedData = JSON.parse(body);
         if (dataStore.data) {
+          updatedData.id = dataStore.data.id;  // Keep the original ID
+          updatedData.timestamp = new Date().toISOString();  // Update timestamp
           dataStore.data = updatedData;
-          return sendResponse(res, 200, { message: 'Data updated successfully.', data: updatedData });
+          return sendResponse(res, 200, { message: 'Data updated successfully.', data: updatedData }); 
         } else {
-          return sendResponse(res, 404, { message: 'Data not found.' });
+          return sendResponse(res, 404, { message: 'Data not found.' }); 
         }
       } catch {
         return sendResponse(res, 400, { message: 'Invalid JSON format' });
