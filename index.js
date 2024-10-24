@@ -7,10 +7,13 @@ let dataStore = {
 
 const sendResponse = (res, statusCode, data) => {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(data));
+  if (data) {
+    res.end(JSON.stringify(data));
+  } else {
+    res.end();
+  }
 };
 
-// Create server
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const method = req.method;
@@ -33,7 +36,7 @@ const server = http.createServer((req, res) => {
       try {
         const newData = JSON.parse(body);
         dataStore.data = newData;
-        return sendResponse(res, 201, { message: 'Data saved successfully.', data: newData });
+        return sendResponse(res, 201, { message: 'Data saved successfully!', data: newData });
       } catch {
         return sendResponse(res, 400, { message: 'Invalid JSON format' });
       }
@@ -46,9 +49,9 @@ const server = http.createServer((req, res) => {
   if (method === 'DELETE' && path === '/data') {
     if (dataStore.data) {
       dataStore.data = null;
-      return sendResponse(res, 200, { message: 'Data deleted.' });
+      return sendResponse(res, 204); 
     } else {
-      return sendResponse(res, 404, { message: 'Data not found.' });
+      return sendResponse(res, 404, { message: 'Data not found.' }); 
     }
   }
 
@@ -65,7 +68,7 @@ const server = http.createServer((req, res) => {
         const updatedData = JSON.parse(body);
         if (dataStore.data) {
           dataStore.data = updatedData;
-          return sendResponse(res, 200, { message: 'Data updated.', data: updatedData });
+          return sendResponse(res, 200, { message: 'Data updated successfully.', data: updatedData });
         } else {
           return sendResponse(res, 404, { message: 'Data not found.' });
         }
@@ -77,7 +80,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Send 404 response for non-existing resources
+  // Send 404
   return sendResponse(res, 404, { message: 'Resource not found' });
 });
 
