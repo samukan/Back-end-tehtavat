@@ -1,6 +1,7 @@
-# My Node.js Project
+# Assignment 3: HTTP Standards Compliance
 
-This is a simple Node.js project setup with ESLint for code linting and Nodemon for automatic restarting during development.
+Updated API to use appropriate HTTP methods and status codes.
+Set proper Content-Type headers for all responses.
 
 ## Installation
 
