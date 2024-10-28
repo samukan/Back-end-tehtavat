@@ -1,8 +1,10 @@
-# My Node.js Project
+#Assignment 4:
+Testing with Postman\n\nTested all API endpoints using Postman, ensuring the correct functionality and responses.
 
-This is a simple Node.js project setup with ESLint for code linting and Nodemon for automatic restarting during development.
+See returned PDF Document in OMA assignment for screenshots.
 
 ## Installation
 
 ```bash
 npm install
+```
