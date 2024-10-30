@@ -10,16 +10,13 @@
 
     Asenna riippuvuudet:
 
-    bash
+    npm install
 
-npm install
-Käynnistä palvelin:
+Käynnistä palvelin: node index.js
 
 Palvelin käynnistyy osoitteessa http://localhost:3000/.
 
 🧪 Testaus
 
-Voit testata APIa
-käyttämällä Postmania tai curl-komentoja. Examples of curl commands can be found in the documentation.
-Voit testata API:a Postmanilla tai curl-komentoja käyttäen. Esimerkkejä curl-komennoista löytyy dokumentaatiosta.
+Voit testata API:a Postmanilla tai curl-komentoja käyttäen. Esimerkkejä curl-komennoista löytyy palautetusta PDF-dokumentaatiosta.
 Staattiset tiedostot: Mediatiedostot sijaitsevat src/public/media-hakemistossa.
