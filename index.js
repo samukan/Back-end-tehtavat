@@ -2,11 +2,9 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Initialize Express
 const app = express();
 const port = 3000;
 
-// Set up __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -24,7 +22,7 @@ app.use(express.json());
 import mediaData from "./src/data/media.json" assert { type: "json" };
 import userData from "./src/data/users.json" assert { type: "json" };
 
-// Render the landing page with information about the API
+// Render the landing page
 app.get("/", (req, res) => {
   const host = `${req.protocol}://${req.get("host")}/`;
   const mediaItemsWithUrl = mediaData.map((item) => ({
@@ -39,7 +37,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// GET /api/media - Get all media items
+// GET /api/media
 app.get("/api/media", (req, res) => {
   const host = `${req.protocol}://${req.get("host")}/`;
   const mediaItemsWithUrl = mediaData.map((item) => ({
@@ -49,7 +47,7 @@ app.get("/api/media", (req, res) => {
   res.status(200).json(mediaItemsWithUrl);
 });
 
-// GET /api/media/:id - Get one media item by ID
+// GET /api/media/:id
 app.get("/api/media/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const mediaItem = mediaData.find((item) => item.media_id === id);
@@ -66,7 +64,7 @@ app.get("/api/media/:id", (req, res) => {
   }
 });
 
-// POST /api/media - Add a new media item
+// POST /api/media
 app.post("/api/media", (req, res) => {
   const { filename, title, description, user_id, media_type } = req.body;
 
@@ -88,7 +86,7 @@ app.post("/api/media", (req, res) => {
   res.status(201).json(newMedia);
 });
 
-// PUT /api/media/:id - Update a media item by ID
+// PUT /api/media/:id
 app.put("/api/media/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = mediaData.findIndex((item) => item.media_id === id);
@@ -101,7 +99,7 @@ app.put("/api/media/:id", (req, res) => {
   }
 });
 
-// DELETE /api/media/:id - Delete a media item by ID
+// DELETE /api/media/:id
 app.delete("/api/media/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = mediaData.findIndex((item) => item.media_id === id);
@@ -114,14 +112,12 @@ app.delete("/api/media/:id", (req, res) => {
   }
 });
 
-// User Endpoints
-
-// GET /api/user - Get all users
+// GET /api/user
 app.get("/api/user", (req, res) => {
   res.status(200).json(userData);
 });
 
-// GET /api/user/:id - Get one user by ID
+// GET /api/user/:id
 app.get("/api/user/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const user = userData.find((u) => u.user_id === id);
@@ -133,7 +129,7 @@ app.get("/api/user/:id", (req, res) => {
   }
 });
 
-// POST /api/user - Add a new user
+// POST /api/user
 app.post("/api/user", (req, res) => {
   const { username, email, user_level_id } = req.body;
 
@@ -153,7 +149,7 @@ app.post("/api/user", (req, res) => {
   res.status(201).json(newUser);
 });
 
-// PUT /api/user/:id - Update a user by ID
+// PUT /api/user/:id
 app.put("/api/user/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = userData.findIndex((u) => u.user_id === id);
@@ -166,7 +162,7 @@ app.put("/api/user/:id", (req, res) => {
   }
 });
 
-// DELETE /api/user/:id - Delete a user by ID
+// DELETE /api/user/:id
 app.delete("/api/user/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = userData.findIndex((u) => u.user_id === id);
@@ -179,7 +175,6 @@ app.delete("/api/user/:id", (req, res) => {
   }
 });
 
-// Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
