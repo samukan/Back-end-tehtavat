@@ -1,0 +1,23 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    style
+      include style.css
+    title= title
+  body
+    // Use title property from the index.js (rendered comment)
+    h1= title
+    p Welcome to my Media API!
+    //- String interpolation (unrendered comment)
+    p Version: #{version}
+    h2 Mock data files
+    div
+      ul
+        each item in exampleData
+          li
+            p= item.title
+            img(src='/media/' + item.filename, width='200')
+    //- needs markdown-it plugin to render markdown (check package.json)
+    include:markdown-it api-doc-v1.md

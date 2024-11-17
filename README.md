@@ -1,8 +1,12 @@
-# My Node.js Project
-
-This is a simple Node.js project setup with ESLint for code linting and Nodemon for automatic restarting during development.
+# Media Sharing app REST API application
 
 ## Installation
 
-```bash
-npm install
+1. Clone
+2. Run `npm install`
+3. Create database
+4. Create .env file (see `.env.sample`)
+
+## Run
+
+1. Run `npm run dev`
