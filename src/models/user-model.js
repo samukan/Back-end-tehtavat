@@ -1,8 +1,11 @@
+// src/models/user-model.js
 import promisePool from '../utils/database.js';
 
 const fetchUsers = async () => {
   try {
-    const [rows] = await promisePool.query('SELECT * FROM Users');
+    const [rows] = await promisePool.query(
+      'SELECT user_id, username, email, user_level_id FROM Users',
+    );
     return rows;
   } catch (e) {
     console.error('fetchUsers', e.message);
@@ -12,11 +15,23 @@ const fetchUsers = async () => {
 
 const fetchUserById = async (id) => {
   try {
-    const sql = 'SELECT * FROM Users WHERE user_id = ?';
+    const sql =
+      'SELECT user_id, username, email, user_level_id FROM Users WHERE user_id = ?';
     const [rows] = await promisePool.query(sql, [id]);
     return rows[0];
   } catch (e) {
     console.error('fetchUserById', e.message);
+    throw new Error('Database error ' + e.message);
+  }
+};
+
+const selectUserByUsername = async (username) => {
+  try {
+    const sql = 'SELECT * FROM Users WHERE username = ?';
+    const [rows] = await promisePool.query(sql, [username]);
+    return rows[0];
+  } catch (e) {
+    console.error('selectUserByUsername', e.message);
     throw new Error('Database error ' + e.message);
   }
 };
@@ -61,6 +76,7 @@ const deleteUserFromDB = async (id) => {
 export {
   fetchUsers,
   fetchUserById,
+  selectUserByUsername,
   addUserToDB,
   updateUserInDB,
   deleteUserFromDB,

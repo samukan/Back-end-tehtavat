@@ -1,3 +1,4 @@
+// src/routes/media-router.js
 import express from 'express';
 import multer from 'multer';
 import {
@@ -7,6 +8,7 @@ import {
   putItem,
   deleteItem,
 } from '../controllers/media-controller.js';
+import authenticateToken from '../middlewares/authentication.js';
 
 // Määritä multerin tallennuspolku
 const upload = multer({dest: 'uploads/'});
@@ -18,6 +20,7 @@ mediaRouter
   .route('/')
   .get(getItems)
   .post(
+    authenticateToken, // Vain autentikoidut käyttäjät voivat ladata
     upload.single('file'),
     (req, res, next) => {
       // Loggaa body ja file täällä
@@ -30,8 +33,8 @@ mediaRouter
 
 mediaRouter
   .route('/:id')
-  .get(getItemById) // Hae yksittäinen media-item ID:llä
-  .put(putItem) // Päivitä media-item
-  .delete(deleteItem); // Poista media-item
+  .get(getItemById)
+  .put(authenticateToken, putItem)
+  .delete(authenticateToken, deleteItem);
 
 export default mediaRouter;

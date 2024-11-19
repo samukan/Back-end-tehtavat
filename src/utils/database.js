@@ -1,3 +1,4 @@
+//src/utils/database.js
 import mysql from 'mysql2';
 import 'dotenv/config';
 

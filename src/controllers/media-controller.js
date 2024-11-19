@@ -1,3 +1,4 @@
+// src/controllers/media-controller.js
 import {
   fetchMediaItems,
   addMediaItem,
@@ -36,7 +37,7 @@ const postItem = async (req, res) => {
   console.log('Request file:', req.file);
 
   const {title, description} = req.body;
-  const userId = 1;
+  const userId = req.user.user_id; // Ota user_id autentikoidusta käyttäjästä
 
   const newMediaItem = {
     user_id: userId,
@@ -60,20 +61,35 @@ const postItem = async (req, res) => {
 };
 
 const putItem = async (req, res) => {
+  const itemId = parseInt(req.params.id);
   const {title, description} = req.body;
-  console.log('put req body', req.body);
-  const newDetails = {
-    title,
-    description,
-  };
+  const userId = req.user.user_id;
+  const userLevelId = req.user.user_level_id;
+
   try {
-    const itemsEdited = await updateMediaItem(req.params.id, newDetails);
-    if (itemsEdited === 0) {
+    // Hae mediaobjekti
+    const item = await fetchMediaItemById(itemId);
+    if (!item) {
       return res.status(404).json({message: 'Item not found'});
-    } else if (itemsEdited === 1) {
-      return res.status(200).json({message: 'Item updated', id: req.params.id});
+    }
+
+    // Tarkista, onko käyttäjä omistaja tai admin
+    if (item.user_id !== userId && userLevelId !== 1) {
+      return res
+        .status(403)
+        .json({message: 'Forbidden: You do not own this item'});
+    }
+
+    const updatedItem = {title, description};
+    const itemsEdited = await updateMediaItem(itemId, updatedItem);
+
+    if (itemsEdited === 0) {
+      return res.status(404).json({message: 'Item not found or not updated'});
+    } else {
+      return res.status(200).json({message: 'Item updated', id: itemId});
     }
   } catch (error) {
+    console.error('putItem', error.message);
     return res
       .status(500)
       .json({message: 'Something went wrong: ' + error.message});
@@ -81,15 +97,33 @@ const putItem = async (req, res) => {
 };
 
 const deleteItem = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const itemId = parseInt(req.params.id);
+  const userId = req.user.user_id;
+  const userLevelId = req.user.user_level_id;
+
   try {
-    const itemsDeleted = await deleteMediaItem(id);
-    if (itemsDeleted === 0) {
+    // Hae mediaobjekti
+    const item = await fetchMediaItemById(itemId);
+    if (!item) {
       return res.status(404).json({message: 'Item not found'});
-    } else if (itemsDeleted === 1) {
-      return res.status(200).json({message: 'Item deleted', id: id});
+    }
+
+    // Tarkista, onko käyttäjä omistaja tai admin
+    if (item.user_id !== userId && userLevelId !== 1) {
+      return res
+        .status(403)
+        .json({message: 'Forbidden: You do not own this item'});
+    }
+
+    const itemsDeleted = await deleteMediaItem(itemId);
+
+    if (itemsDeleted === 0) {
+      return res.status(404).json({message: 'Item not found or not deleted'});
+    } else {
+      return res.status(200).json({message: 'Item deleted', id: itemId});
     }
   } catch (error) {
+    console.error('deleteItem', error.message);
     return res
       .status(500)
       .json({message: 'Something went wrong: ' + error.message});

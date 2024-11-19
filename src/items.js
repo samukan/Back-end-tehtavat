@@ -1,3 +1,4 @@
+//src/items.js
 // Dummy mock data
 const items = [
   {id: 1, name: 'Item1'},

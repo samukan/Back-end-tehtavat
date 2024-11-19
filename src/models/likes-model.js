@@ -1,3 +1,4 @@
+//src/models/likes-model.js
 import promisePool from '../utils/database.js';
 
 const fetchLikesByMediaId = async (mediaId) => {
@@ -45,4 +46,21 @@ const deleteLikeFromDB = async (id) => {
   }
 };
 
-export {fetchLikesByMediaId, fetchLikesByUserId, addLikeToDB, deleteLikeFromDB};
+const fetchLikeById = async (likeId) => {
+  const sql = 'SELECT * FROM Likes WHERE like_id = ?';
+  try {
+    const [rows] = await promisePool.query(sql, [likeId]);
+    return rows[0];
+  } catch (e) {
+    console.error('fetchLikeById', e.message);
+    throw new Error('Database error ' + e.message);
+  }
+};
+
+export {
+  fetchLikesByMediaId,
+  fetchLikesByUserId,
+  addLikeToDB,
+  deleteLikeFromDB,
+  fetchLikeById,
+};

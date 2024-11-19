@@ -1,6 +1,8 @@
+// src/controllers/user-controller.js
 import {
   fetchUsers,
   fetchUserById,
+  selectUserByUsername,
   addUserToDB,
   updateUserInDB,
   deleteUserFromDB,
@@ -37,6 +39,12 @@ const addUser = async (req, res) => {
     return res.status(400).json({message: 'All fields are required'});
   }
   try {
+    // Tarkista, onko käyttäjätunnus jo käytössä
+    const existingUser = await selectUserByUsername(username);
+    if (existingUser) {
+      return res.status(409).json({message: 'Username already taken'});
+    }
+
     const id = await addUserToDB({username, password, email, user_level_id});
     res.status(201).json({message: 'User added', id: id});
   } catch (e) {

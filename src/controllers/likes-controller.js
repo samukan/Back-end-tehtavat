@@ -1,8 +1,10 @@
+//src/controllers/likes-controller.js
 import {
   fetchLikesByMediaId,
   fetchLikesByUserId,
   addLikeToDB,
   deleteLikeFromDB,
+  fetchLikeById,
 } from '../models/likes-model.js';
 
 const getLikesByMediaId = async (req, res) => {
@@ -28,10 +30,13 @@ const getLikesByUserId = async (req, res) => {
 };
 
 const addLike = async (req, res) => {
-  const {media_id, user_id} = req.body;
-  if (!media_id || !user_id) {
-    return res.status(400).json({message: 'media_id and user_id are required'});
+  const {media_id} = req.body;
+  const user_id = req.user.user_id;
+
+  if (!media_id) {
+    return res.status(400).json({message: 'media_id is required'});
   }
+
   try {
     const id = await addLikeToDB({media_id, user_id});
     res.status(201).json({message: 'Like added', id: id});
@@ -42,13 +47,27 @@ const addLike = async (req, res) => {
 };
 
 const deleteLike = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const like_id = parseInt(req.params.id);
+  const user_id = req.user.user_id;
+
   try {
-    const rowsAffected = await deleteLikeFromDB(id);
+    const like = await fetchLikeById(like_id);
+
+    if (!like) {
+      return res.status(404).json({message: 'Like not found'});
+    }
+
+    if (like.user_id !== user_id && req.user.user_level_id !== 1) {
+      return res
+        .status(403)
+        .json({message: 'Forbidden: You cannot delete this like'});
+    }
+
+    const rowsAffected = await deleteLikeFromDB(like_id);
     if (rowsAffected === 0) {
       res.status(404).json({message: 'Like not found'});
     } else {
-      res.json({message: 'Like deleted', id: id});
+      res.json({message: 'Like deleted', id: like_id});
     }
   } catch (e) {
     console.error('deleteLike', e.message);

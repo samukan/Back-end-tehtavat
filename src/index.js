@@ -1,7 +1,9 @@
+// src/index.js
 import express from 'express';
 import mediaRouter from './routes/media-router.js';
 import userRouter from './routes/user-router.js';
 import likesRouter from './routes/likes-router.js';
+import authRouter from './routes/auth-router.js';
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -24,6 +26,9 @@ app.get('/api', (req, res) => {
     version: process.env.npm_package_version,
   });
 });
+
+// Authentication endpoints
+app.use('/api/auth', authRouter);
 
 // Media resource endpoints
 app.use('/api/media', mediaRouter);
