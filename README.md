@@ -1,5 +1,3 @@
-# Media Sharing app REST API application
-
 ## Installation
 
 1. Clone
