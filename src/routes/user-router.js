@@ -8,18 +8,20 @@ import {
   deleteUser,
 } from '../controllers/user-controller.js';
 import authenticateToken from '../middlewares/authentication.js';
+import userValidationRules from '../validators/user-validator.js';
+import validate from '../middlewares/validate.js';
 
 const userRouter = express.Router();
 
 userRouter
   .route('/')
-  .get(authenticateToken, getUsers) // Vain autentikoidut käyttäjät voivat listata käyttäjät
-  .post(addUser); // Käyttäjän rekisteröinti on avoin
+  .get(authenticateToken, getUsers)
+  .post(userValidationRules(), validate, addUser);
 
 userRouter
   .route('/:id')
   .get(authenticateToken, getUserById)
-  .put(authenticateToken, updateUser)
+  .put(authenticateToken, userValidationRules(), validate, updateUser)
   .delete(authenticateToken, deleteUser);
 
 export default userRouter;

@@ -9,32 +9,31 @@ import {
   deleteItem,
 } from '../controllers/media-controller.js';
 import authenticateToken from '../middlewares/authentication.js';
+import mediaValidationRules from '../validators/media-validator.js';
+import validate from '../middlewares/validate.js';
 
-// Määritä multerin tallennuspolku
 const upload = multer({dest: 'uploads/'});
 
 const mediaRouter = express.Router();
 
-// Lisää upload.single('file') tiedoston lataamiseen
-mediaRouter
-  .route('/')
-  .get(getItems)
-  .post(
-    authenticateToken, // Vain autentikoidut käyttäjät voivat ladata
-    upload.single('file'),
-    (req, res, next) => {
-      // Loggaa body ja file täällä
-      console.log('Multer processed req.body:', req.body);
-      console.log('Multer processed req.file:', req.file);
-      next(); // Siirry varsinaiseen kontrolleriin
-    },
-    postItem,
-  );
+mediaRouter.route('/').get(getItems).post(
+  authenticateToken,
+  upload.single('file'), // Pidä tämä rivinä
+  mediaValidationRules(),
+  validate,
+  postItem,
+);
 
 mediaRouter
   .route('/:id')
   .get(getItemById)
-  .put(authenticateToken, putItem)
+  .put(
+    authenticateToken,
+    upload.single('file'), // Lisää tämä, jos puuttuu
+    mediaValidationRules(),
+    validate,
+    putItem,
+  )
   .delete(authenticateToken, deleteItem);
 
 export default mediaRouter;

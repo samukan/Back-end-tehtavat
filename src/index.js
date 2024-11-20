@@ -4,6 +4,7 @@ import mediaRouter from './routes/media-router.js';
 import userRouter from './routes/user-router.js';
 import likesRouter from './routes/likes-router.js';
 import authRouter from './routes/auth-router.js';
+import errorHandler from './middlewares/error-handler.js';
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -38,6 +39,9 @@ app.use('/api/users', userRouter);
 
 // Likes resource endpoints
 app.use('/api/likes', likesRouter);
+
+// Error handling middleware
+app.use(errorHandler);
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
