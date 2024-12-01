@@ -1,6 +1,10 @@
 // src/validators/media-validator.js
 import {body} from 'express-validator';
 
+/**
+ * @apiDefine MediaValidation
+ * @apiError (400) ValidationError Validation failed.
+ */
 const mediaValidationRules = () => {
   return [
     body('title')

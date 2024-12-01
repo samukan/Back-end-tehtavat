@@ -1,6 +1,10 @@
 // src/validators/user-validator.js
 import {body} from 'express-validator';
 
+/**
+ * @apiDefine UserValidation
+ * @apiError (400) ValidationError Validation failed.
+ */
 const userValidationRules = () => {
   return [
     body('username')

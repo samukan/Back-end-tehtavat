@@ -7,12 +7,14 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "apidoc": "apidoc -i src/ -o docs/"
   },
   "author": "mattpe",
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "apidoc": "^1.2.0",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.11.0",

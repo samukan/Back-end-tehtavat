@@ -2,6 +2,12 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
+/**
+ * @apiDefine AuthHeader
+ * @apiHeader {String} Authorization Bearer token.
+ *
+ * @apiError (401) Unauthorized Token missing or invalid.
+ */
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 

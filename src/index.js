@@ -10,6 +10,8 @@ import userRouter from './routes/user-router.js';
 import likesRouter from './routes/likes-router.js';
 import authRouter from './routes/auth-router.js';
 import errorHandler from './middlewares/error-handler.js';
+import path from 'path';
+import {fileURLToPath} from 'url';
 
 dotenv.config();
 
@@ -20,13 +22,32 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', 'src/views');
 
-// Ota käyttöön Helmet turvallisten HTTP-otsikoiden asettamiseksi
-app.use(helmet());
+// Ota Helmet käyttöön kaikkialla muualla paitsi /docs-reitillä
+app.use((req, res, next) => {
+  if (req.path.startsWith('/docs')) {
+    next();
+  } else {
+    helmet()(req, res, next);
+  }
+});
+
+// Muokkaa CSP:tä /docs-reitillä sallimaan 'unsafe-eval'
+app.use(
+  '/docs',
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      },
+    },
+  }),
+);
 
 // Konfiguroi CORS
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Muokkaa tämä sallituiksi alkuperiksi
+    origin: 'http://localhost:3000',
   }),
 );
 
@@ -66,6 +87,11 @@ app.use('/api/likes', likesRouter);
 
 // Error handling middleware
 app.use(errorHandler);
+
+// Palvele dokumentaatiota
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/docs', express.static(path.join(__dirname, '../docs')));
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
