@@ -1,5 +1,6 @@
 // src/controllers/auth-controller.js
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import {selectUserByUsername} from '../models/user-model.js';
 import 'dotenv/config';
 
@@ -12,8 +13,9 @@ const postLogin = async (req, res) => {
       return res.status(401).json({message: 'Invalid credentials'});
     }
 
-    // Vertaile salasanoja suoraan
-    if (password !== user.password) {
+    // Vertaa salasanoja bcryptillä
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(401).json({message: 'Invalid credentials'});
     }
 

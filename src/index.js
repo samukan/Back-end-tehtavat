@@ -1,17 +1,41 @@
 // src/index.js
 import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+
 import mediaRouter from './routes/media-router.js';
 import userRouter from './routes/user-router.js';
 import likesRouter from './routes/likes-router.js';
 import authRouter from './routes/auth-router.js';
 import errorHandler from './middlewares/error-handler.js';
 
+dotenv.config();
+
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.set('view engine', 'pug');
 app.set('views', 'src/views');
+
+// Ota käyttöön Helmet turvallisten HTTP-otsikoiden asettamiseksi
+app.use(helmet());
+
+// Konfiguroi CORS
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // Muokkaa tämä sallituiksi alkuperiksi
+  }),
+);
+
+// Ota käyttöön Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minuuttia
+  max: 100, // Maksimimäärä pyyntöjä per IP per aikaikkuna
+});
+app.use(limiter);
 
 app.use(express.json());
 

@@ -1,8 +1,10 @@
 // src/middlewares/error-handler.js
 
-// eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  // Tulosta virhepinon vain kehitysympäristössä
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  }
 
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
@@ -15,6 +17,11 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.details && err.details.length > 0) {
     response.error.details = err.details;
+  }
+
+  // Lisää virhepino vastaukseen vain kehitysympäristössä
+  if (process.env.NODE_ENV !== 'production') {
+    response.error.stack = err.stack;
   }
 
   res.status(status).json(response);

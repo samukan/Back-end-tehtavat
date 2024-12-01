@@ -1,4 +1,5 @@
 // src/controllers/user-controller.js
+import bcrypt from 'bcryptjs';
 import {
   fetchUsers,
   fetchUserById,
@@ -34,19 +35,23 @@ const getUserById = async (req, res, next) => {
 };
 
 const addUser = async (req, res, next) => {
-  const {username, password, email, user_level_id} = req.body;
-
   try {
-    // Tarkista, onko käyttäjätunnus jo käytössä
-    const existingUser = await selectUserByUsername(username);
-    if (existingUser) {
-      const error = new Error('Username already taken');
-      error.status = 409;
-      return next(error);
-    }
+    const {username, password, email, user_level_id} = req.body;
 
-    const id = await addUserToDB({username, password, email, user_level_id});
-    res.status(201).json({message: 'User added', id: id});
+    // Hashaa salasana
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = {
+      username,
+      password: hashedPassword,
+      email,
+      user_level_id,
+    };
+
+    // Tallenna uusi käyttäjä tietokantaan
+    const id = await addUserToDB(newUser);
+    res.status(201).json({message: 'User added', id});
   } catch (e) {
     next(e);
   }
